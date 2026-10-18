@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Master Production Deployment & Launch Guide — Cab & Tour Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f19;
+      --card-bg: #111827;
+      --card-border: #1f2937;
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --emerald: #10b981;
+      --cyan: #06b6d4;
+      --indigo: #6366f1;
+      --text: #f3f4f6;
+      --text-muted: #9ca3af;
+      --code-bg: #030712;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding-bottom: 5rem;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* Top Banner */
+    .hero {
+      background: radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, transparent 70%),
+                  linear-gradient(180deg, #111827 0%, #0b0f19 100%);
+      border-bottom: 1px solid var(--card-border);
+      padding: 4rem 0 3rem;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--primary);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      margin-bottom: 1.25rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      color: #ffffff;
+      margin-bottom: 1rem;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 720px;
+      margin: 0 auto 2rem;
+    }
+
+    .quick-stats {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .stat-pill {
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid var(--card-border);
+      padding: 0.6rem 1.2rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Section Styles */
+    section {
+      margin-top: 3.5rem;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card.highlight {
+      border-color: rgba(245, 158, 11, 0.35);
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.04) 0%, #111827 100%);
+    }
+
+    /* Checklist interactive component */
+    .checklist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .check-item {
+      background: #0d131f;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .check-item:hover {
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .check-box {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid #374151;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+      background: #1f2937;
+      transition: all 0.2s;
+    }
+
+    .check-box.checked {
+      background: var(--emerald);
+      border-color: var(--emerald);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .check-text h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 0.2rem;
+    }
+
+    .check-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .check-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      margin-top: 0.4rem;
+    }
+
+    .badge-critical { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-important { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-optional { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* Comparison Table */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 1.5rem 0;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background: #172033;
+      color: #ffffff;
+      padding: 1rem 1.25rem;
+      font-weight: 700;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #1a2333;
+      color: #d1d5db;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Terminal Code Block */
+    .terminal {
+      background: var(--code-bg);
+      border: 1px solid #1e293b;
+      border-radius: 12px;
+      margin: 1.25rem 0;
+      overflow: hidden;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .terminal-header {
+      background: #0f172a;
+      padding: 0.6rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1e293b;
+      font-size: 0.75rem;
+      color: #64748b;
+    }
+
+    .dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #10b981; }
+
+    pre {
+      padding: 1.25rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: #e2e8f0;
+    }
+
+    .cmd {
+      color: #38bdf8;
+    }
+
+    .comment {
+      color: #64748b;
+      font-style: italic;
+    }
+
+    .flag {
+      color: #f59e0b;
+    }
+
+    /* Step Numbers */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #000;
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-right: 0.75rem;
+    }
+
+    /* Two Column Grid */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* Callout Alert */
+    .alert {
+      padding: 1.2rem 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      font-size: 0.9rem;
+    }
+
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      color: #fde68a;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #a7f3d0;
+    }
+
+    .alert-info {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      color: #a5f3fc;
+    }
+
+    /* Links & Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--primary);
+      color: #000;
+      padding: 0.75rem 1.5rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #1f2937;
+      color: #ffffff;
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background: #374151;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Hero Header -->
+  <header class="hero">
+    <div class="container">
+      <div class="badge">🚀 Production Launch Blueprint</div>
+      <h1>Master <span>Deployment & Domain</span> Guide</h1>
+      <p class="subtitle">
+        Everything you need to take your <strong>Shahdol Cab & tour@sdl</strong> platform from your local computer to a live 24/7 custom domain website with full security, database persistence, and driver tracking.
+      </p>
+
+      <div class="quick-stats">
+        <div class="stat-pill">💰 <strong>Zero-Cost Option:</strong> $0/mo via Vercel + Supabase</div>
+        <div class="stat-pill">🔒 <strong>Free SSL:</strong> Automated Let's Encrypt HTTPS</div>
+        <div class="stat-pill">🌐 <strong>Domain:</strong> Works with .com, .in, .org</div>
+        <div class="stat-pill">⚡ <strong>Live Stack:</strong> Next.js App Router + TypeScript</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- MASTER TASK CHECKLIST -->
+    <section id="checklist">
+      <div class="section-title">
+        <span>📋</span> Master Implementation Task Checklist
+      </div>
+      <p class="section-subtitle">
+        Click on each item as you complete it. This gives you a clear roadmap of what is already done and what is required for commercial launch.
+      </p>
+
+      <div class="card highlight">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="color: #fff; font-size: 1.15rem;">Interactive Launch Progress Tracker</h3>
+          <span id="progress-indicator" style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">4 of 12 Tasks Completed</span>
+        </div>
+
+        <div class="checklist-grid">
+          <!-- Item 1 -->
+          <div class="check-item">
+            <div class="check-box checked" onclick="toggleCheck(this)">✓</div>
+            <div class="check-text">
+              <h4>1. Core Web App & Map Build</h4>
+              <p>Square map with Shahdol/Umaria/Anuppur, bilingual Hindi names, real road calculation, and luxury Bandhavgarh Tala showcase.</p>
+              <span class="check-badge badge-critical">Completed in Codebase</span>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="check-item">
+            <div class="check-box checked" onclick="toggleCheck(this)">✓</div>
+            <div class="check-text">
+              <h4>2. Dual Passenger & Driver System</h4>
+              <p>Encrypted bcrypt password authentication, active driver radar, and ride request state machine (Requested → Accepted → In-Transit → Done).</p>
+              <span class="check-badge badge-critical">Completed in Codebase</span>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="check-item">
+            <div class="check-box checked" onclick="toggleCheck(this)">✓</div>
+            <div class="check-text">
+              <h4>3. tour@sdl Wix Site Extraction</h4>
+              <p>Full Wix website scraped and recreated offline into standalone HTML with hero, services, blog, and cab booking bridge.</p>
+              <span class="check-badge badge-critical">Completed in Codebase</span>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="check-item">
+            <div class="check-box checked" onclick="toggleCheck(this)">✓</div>
+            <div class="check-text">
+              <h4>4. Local Git Repository</h4>
+              <p>All source code, public assets, and components versioned cleanly under Git on the master branch.</p>
+              <span class="check-badge badge-critical">Completed Locally</span>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>5. GitHub Remote Repository</h4>
+              <p>Create a repository on GitHub (e.g. <code>github.com/your-name/cab-platform</code>) and push the project code.</p>
+              <span class="check-badge badge-critical">Immediate Next Step</span>
+            </div>
+          </div>
+
+          <!-- Item 6 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>6. Production Database (Supabase)</h4>
+              <p>Create a free PostgreSQL instance on Supabase and run the included <code>supabase_schema.sql</code> file.</p>
+              <span class="check-badge badge-critical">Recommended for Multi-user</span>
+            </div>
+          </div>
+
+          <!-- Item 7 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>7. Web Hosting Deployment</h4>
+              <p>Connect your GitHub repository to Vercel (or setup VPS Nginx) for continuous 24/7 online hosting.</p>
+              <span class="check-badge badge-critical">Launch Requirement</span>
+            </div>
+          </div>
+
+          <!-- Item 8 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>8. Custom Domain Name (.in / .com)</h4>
+              <p>Purchase a domain (e.g. <code>shahdolcab.in</code> or <code>touratsdl.com</code>) and set up DNS A & CNAME records.</p>
+              <span class="check-badge badge-important">Branding & Trust</span>
+            </div>
+          </div>
+
+          <!-- Item 9 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>9. SSL Certificate (HTTPS)</h4>
+              <p>Ensure green padlock is active. Vercel provisions this automatically for free in under 60 seconds.</p>
+              <span class="check-badge badge-important">Security Requirement</span>
+            </div>
+          </div>
+
+          <!-- Item 10 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>10. Payment Gateway (Razorpay/UPI)</h4>
+              <p>Enable online prepayments or cash-on-delivery tracking with Razorpay or Cashfree for Indian riders.</p>
+              <span class="check-badge badge-optional">Commercial Scaling</span>
+            </div>
+          </div>
+
+          <!-- Item 11 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>11. SMS / WhatsApp OTP Login</h4>
+              <p>Implement Fast2SMS or Twilio for quick phone number verification without requiring riders to memorize passwords.</p>
+              <span class="check-badge badge-optional">Convenience</span>
+            </div>
+          </div>
+
+          <!-- Item 12 -->
+          <div class="check-item">
+            <div class="check-box" onclick="toggleCheck(this)"></div>
+            <div class="check-text">
+              <h4>12. Legal Policies & Driver KYC</h4>
+              <p>Add Terms of Service, Cancellation & Refund Policy, Privacy Policy, and driver driving license upload form.</p>
+              <span class="check-badge badge-important">Legal Compliance</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: ARCHITECTURAL CHOICE (VERCEL VS VPS) -->
+    <section id="hosting-choice">
+      <div class="section-title">
+        <span>⚖️</span> Architecture Choice: Vercel vs. Dedicated VPS
+      </div>
+      <p class="section-subtitle">
+        Here is the direct comparison to choose the best foundation for your business.
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Option 1: Vercel + Supabase (Recommended)</th>
+              <th>Option 2: Dedicated Cloud VPS (Ubuntu/Nginx)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Monthly Cost</strong></td>
+              <td><span style="color: var(--emerald); font-weight: 700;">$0 / month (100% Free Tier)</span></td>
+              <td>$4 to $12 / month (Hostinger / Hetzner / DigitalOcean)</td>
+            </tr>
+            <tr>
+              <td><strong>Deployment Speed</strong></td>
+              <td>Push to GitHub → Live online in 60 seconds</td>
+              <td>Requires SSH, installing Node, PM2, Nginx, UFW firewall</td>
+            </tr>
+            <tr>
+              <td><strong>SSL Certificate</strong></td>
+              <td>Automatic Let's Encrypt SSL (Zero configuration)</td>
+              <td>Must install and renew Certbot / Let's Encrypt manually</td>
+            </tr>
+            <tr>
+              <td><strong>Maintenance</strong></td>
+              <td>Zero maintenance. Vercel manages servers and scaling.</td>
+              <td>You must manage Linux security patches, crash restarts, RAM.</td>
+            </tr>
+            <tr>
+              <td><strong>Database</strong></td>
+              <td>Supabase Cloud PostgreSQL (500MB free storage)</td>
+              <td>Self-hosted PostgreSQL or SQLite on the VPS disk</td>
+            </tr>
+            <tr>
+              <td><strong>Live Driver Radar</strong></td>
+              <td>Supported via HTTP Polling & Supabase Realtime WebSockets</td>
+              <td>Supported via custom Node.js Socket.io server</td>
+            </tr>
+            <tr>
+              <td><strong>Verdict</strong></td>
+              <td><strong style="color: var(--primary);">Best choice to launch now with $0 overhead.</strong></td>
+              <td>Choose later if you have 10,000+ continuous streaming taxis.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 2: HOW TO GET A DOMAIN & CONFIGURE DNS -->
+    <section id="domain-setup">
+      <div class="section-title">
+        <span>🌐</span> Step 1: Purchasing a Domain & Setting Up DNS
+      </div>
+      <p class="section-subtitle">
+        A custom domain (e.g. <code>shahdolcabs.com</code>, <code>bandhavgarhvoyages.in</code>, or <code>touratsdl.com</code>) establishes trust with passengers and hotel partners.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color: #fff; margin-bottom: 0.75rem;">1. Where to Buy Your Domain</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            For Indian businesses, <code>.in</code> and <code>.co.in</code> are affordable (₹399–₹699/year), while <code>.com</code> offers global recognition.
+          </p>
+          <ul style="padding-left: 1.25rem; font-size: 0.85rem; color: #cbd5e1; space-y: 0.5rem; line-height: 1.8;">
+            <li><strong>Hostinger.in</strong>: Great pricing with UPI/Paytm payment support.</li>
+            <li><strong>Namecheap.com</strong>: Includes free lifetime WHOIS privacy protection.</li>
+            <li><strong>Cloudflare Registrar</strong>: Sells domains at wholesale cost with zero markups.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: #fff; margin-bottom: 0.75rem;">2. DNS Records to Configure</h3>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+            Once purchased, open the DNS Management dashboard of your registrar and add these two records:
+          </p>
+          <div class="terminal" style="margin: 0;">
+            <pre>
+<span class="comment"># Record 1: Apex Domain (@) pointing to Vercel</span>
+Type:  <span class="flag">A</span>
+Name:  <span class="cmd">@</span>
+Value: <span class="cmd">76.76.21.21</span>
+
+<span class="comment"># Record 2: Subdomain (www) pointing to Vercel</span>
+Type:  <span class="flag">CNAME</span>
+Name:  <span class="cmd">www</span>
+Value: <span class="cmd">cname.vercel-dns.com</span>
+            </pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: STEP-BY-STEP ONLINE DEPLOYMENT -->
+    <section id="step-by-step">
+      <div class="section-title">
+        <span>🚀</span> Step 2: Push Code to GitHub & Deploy to Vercel ($0 Cost)
+      </div>
+      <p class="section-subtitle">
+        Follow these exact terminal commands and steps to make your site live to the world in under 3 minutes.
+      </p>
+
+      <div class="card">
+        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
+          <span class="step-badge">1</span>
+          <h3 style="color: #fff;">Create a New Repository on GitHub</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+          1. Go to <a href="https://github.com/new" target="_blank" style="color: var(--primary);">github.com/new</a> in your browser.<br>
+          2. Name the repository: <code>cab-rider-platform</code>.<br>
+          3. Choose <strong>Private</strong> or <strong>Public</strong>, and leave "Initialize with README" <em>unchecked</em> (because your code already has files).<br>
+          4. Click <strong>Create repository</strong>.
+        </p>
+
+        <div style="display: flex; align-items: center; margin-bottom: 1rem; margin-top: 1.5rem;">
+          <span class="step-badge">2</span>
+          <h3 style="color: #fff;">Push Your Code from This Computer</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Open your terminal in this project folder and run:
+        </p>
+
+        <div class="terminal">
+          <div class="terminal-header">
+            <span>PowerShell / Command Prompt</span>
+            <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          </div>
+          <pre>
+<span class="comment"># Link your local repo to GitHub (replace YOUR_GITHUB_USERNAME with your real username)</span>
+<span class="cmd">git remote add origin</span> https://github.com/YOUR_GITHUB_USERNAME/cab-rider-platform.git
+
+<span class="comment"># Rename main branch to match GitHub standard</span>
+<span class="cmd">git branch -M main</span>
+
+<span class="comment"># Push all code, map data, and HTML files</span>
+<span class="cmd">git push -u origin main</span>
+          </pre>
+        </div>
+
+        <div style="display: flex; align-items: center; margin-bottom: 1rem; margin-top: 1.5rem;">
+          <span class="step-badge">3</span>
+          <h3 style="color: #fff;">Deploy on Vercel with 1-Click</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+          1. Go to <a href="https://vercel.com" target="_blank" style="color: var(--primary);">vercel.com</a> and sign in with your GitHub account.<br>
+          2. Click <strong>Add New...</strong> ➔ <strong>Project</strong>.<br>
+          3. You will see <code>cab-rider-platform</code> in the list. Click <strong>Import</strong>.<br>
+          4. In the Project Configuration, keep default settings (Framework: Next.js).<br>
+          5. Click <strong>Deploy</strong>. Vercel will build and launch your site in ~60 seconds with a free URL like: <code>https://cab-rider-platform.vercel.app</code>.
+        </p>
+
+        <div style="display: flex; align-items: center; margin-bottom: 1rem; margin-top: 1.5rem;">
+          <span class="step-badge">4</span>
+          <h3 style="color: #fff;">Link Your Custom Domain in Vercel</h3>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          In your Vercel Dashboard ➔ Project Settings ➔ <strong>Domains</strong> ➔ Type your domain (e.g. <code>shahdolcab.in</code>) and click <strong>Add</strong>. Vercel will automatically generate your free SSL certificate and make your domain live!
+        </p>
+      </div>
+    </section>
+
+    <!-- SECTION 4: PRODUCTION DATABASE SETUP -->
+    <section id="database">
+      <div class="section-title">
+        <span>🗄️</span> Step 3: Setting Up Supabase Cloud PostgreSQL (Free)
+      </div>
+      <p class="section-subtitle">
+        Your app currently stores data locally in <code>data/database.json</code>. For high concurrency across multiple devices on the cloud, connect Supabase in 2 minutes.
+      </p>
+
+      <div class="card">
+        <ol style="padding-left: 1.25rem; font-size: 0.9rem; color: #cbd5e1; line-height: 1.8;">
+          <li>Create a free account at <a href="https://supabase.com" target="_blank" style="color: var(--primary);">supabase.com</a>.</li>
+          <li>Click <strong>New Project</strong> and select <strong>India (Mumbai)</strong> as the region for the lowest network latency.</li>
+          <li>Go to the <strong>SQL Editor</strong> tab on the left sidebar.</li>
+          <li>Copy the contents of the file already in your project: <code style="color: var(--primary);">supabase_schema.sql</code> and click <strong>Run</strong>. This creates the <code>users</code>, <code>rides</code>, and <code>driver_locations</code> tables.</li>
+          <li>Go to <strong>Project Settings ➔ API</strong> and copy your Project URL & <code>service_role</code> key.</li>
+          <li>In Vercel ➔ Project Settings ➔ <strong>Environment Variables</strong>, add:
+            <div class="terminal" style="margin: 0.75rem 0;">
+              <pre>
+NEXT_PUBLIC_SUPABASE_URL = <span class="cmd">https://your-project.supabase.co</span>
+SUPABASE_SERVICE_ROLE_KEY = <span class="cmd">eyJh...your-secret-key</span>
+              </pre>
+            </div>
+            <em>The app will instantly switch to PostgreSQL with zero code changes!</em>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- SECTION 5: ADVANCED COMMERCIAL ADDONS -->
+    <section id="commercial-addons">
+      <div class="section-title">
+        <span>⚡</span> Commercial Scaling: What You Need for a Real Business
+      </div>
+      <p class="section-subtitle">
+        Once your site is live, implement these modules to scale operations like Ola & Uber.
+      </p>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3 style="color: var(--primary); margin-bottom: 0.5rem;">💳 1. Payment Gateway (UPI & Cards)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Integrate <strong>Razorpay</strong> or <strong>Cashfree Payments</strong>:
+          </p>
+          <ul style="padding-left: 1.25rem; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
+            <li>Zero setup fee for Indian registered businesses or sole proprietors.</li>
+            <li>Supports Google Pay, PhonePe, Paytm, UPI QR, and net banking.</li>
+            <li>Instant split payments: Automatically send 80% to driver and keep 20% commission.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--emerald); margin-bottom: 0.5rem;">📱 2. Turn Into a Mobile App (PWA)</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Turn your website into an installable Android & iPhone app without Play Store fees:
+          </p>
+          <ul style="padding-left: 1.25rem; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
+            <li>Users visiting your website see an "Install ShahdolCab App" prompt on Android and iOS.</li>
+            <li>Works like a native app with full-screen experience and home screen icon.</li>
+            <li>Accesses device GPS location in real time.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--cyan); margin-bottom: 0.5rem;">💬 3. WhatsApp & SMS Automated Dispatch</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Instant booking confirmation:
+          </p>
+          <ul style="padding-left: 1.25rem; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
+            <li>Use <strong>Fast2SMS</strong> (₹0.15 per SMS in India) to send OTP logins.</li>
+            <li>Use <strong>Twilio WhatsApp API</strong> or <strong>Wati</strong> to send passenger booking alerts with driver contact card directly on WhatsApp.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--indigo); margin-bottom: 0.5rem;">📄 4. Legal Compliance & Driver Onboarding</h3>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+            Essential requirements before accepting commercial fares:
+          </p>
+          <ul style="padding-left: 1.25rem; font-size: 0.8rem; color: #cbd5e1; line-height: 1.6;">
+            <li>Collect Driver Driving License (DL) & Vehicle RC Book verification.</li>
+            <li>Terms of Service & Fare Breakdown policy (GST/Taxes).</li>
+            <li>Emergency SOS button for passenger safety.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: ALTERNATIVE OPTION 2 - DEDICATED VPS RUNBOOK -->
+    <section id="vps-runbook">
+      <div class="section-title">
+        <span>🖥️</span> Option 2 Runbook: If You Choose a Dedicated VPS (Ubuntu)
+      </div>
+      <p class="section-subtitle">
+        If you prefer your own private Linux machine instead of Vercel, copy-paste these commands into your Ubuntu server terminal:
+      </p>
+
+      <div class="card">
+        <div class="terminal">
+          <div class="terminal-header">
+            <span>Ubuntu 22.04 / 24.04 Server Terminal</span>
+            <div class="dots"><span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span></div>
+          </div>
+          <pre>
+<span class="comment"># 1. Update OS packages & install Node.js 20 & Git</span>
+<span class="cmd">sudo apt update && sudo apt upgrade -y</span>
+<span class="cmd">curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -</span>
+<span class="cmd">sudo apt install -y nodejs nginx git certbot python3-certbot-nginx</span>
+
+<span class="comment"># 2. Clone your code to the server</span>
+<span class="cmd">cd /var/www</span>
+<span class="cmd">sudo git clone https://github.com/YOUR_GITHUB_USERNAME/cab-rider-platform.git</span>
+<span class="cmd">cd cab-rider-platform</span>
+<span class="cmd">npm install</span>
+<span class="cmd">npm run build</span>
+
+<span class="comment"># 3. Run the application 24/7 in background using PM2</span>
+<span class="cmd">sudo npm install -g pm2</span>
+<span class="cmd">pm2 start npm --name "shahdol-cab" -- start</span>
+<span class="cmd">pm2 startup</span>
+<span class="cmd">pm2 save</span>
+
+<span class="comment"># 4. Configure Nginx Reverse Proxy</span>
+<span class="cmd">sudo nano /etc/nginx/sites-available/shahdolcab</span>
+<span class="comment"># (Paste proxy_pass http://localhost:3000; block)</span>
+<span class="cmd">sudo ln -s /etc/nginx/sites-available/shahdolcab /etc/nginx/sites-enabled/</span>
+<span class="cmd">sudo systemctl restart nginx</span>
+
+<span class="comment"># 5. Get Free SSL Certificate for your domain</span>
+<span class="cmd">sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com</span>
+          </pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>Shahdol Cab & tour@sdl Platform • Production Architecture & Launch Documentation</p>
+      <p style="margin-top: 0.5rem; font-size: 0.75rem;">Created for pair-programming deployment. Keep this file saved for reference during your domain setup.</p>
+    </footer>
+
+  </main>
+
+  <script>
+    function toggleCheck(el) {
+      el.classList.toggle('checked');
+      if (el.classList.contains('checked')) {
+        el.textContent = '✓';
+      } else {
+        el.textContent = '';
+      }
+      updateCount();
+    }
+
+    function updateCount() {
+      const all = document.querySelectorAll('.check-box');
+      const checked = document.querySelectorAll('.check-box.checked');
+      const indicator = document.getElementById('progress-indicator');
+      if (indicator) {
+        indicator.textContent = `${checked.length} of ${all.length} Tasks Completed`;
+      }
+    }
+  </script>
+</body>
+</html>

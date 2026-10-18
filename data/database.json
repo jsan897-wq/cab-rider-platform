@@ -1,0 +1,64 @@
+{
+  "users": [
+    {
+      "name": "John Driver",
+      "email": "driver@test.com",
+      "passwordHash": "$2b$10$3IpQEp0XH6KT9iuiOZvMJua38QfXiTlcnknpVD2.Ovj7BqKjRrFci",
+      "role": "driver",
+      "phone": "+91 9999988888",
+      "vehicleType": "car_sedan",
+      "vehicleNumber": "KA-05-MJ-9999",
+      "id": "usr_1792331139435_3hquu",
+      "createdAt": "2026-10-18T13:45:39.435Z"
+    },
+    {
+      "name": "Sanjay singh",
+      "email": "sjay467@gmail.com",
+      "passwordHash": "$2b$10$LvrYRy2CRI1lGAVA5Q9eIejBxdDy03mByYLRnEaQdnyW29vyWTeci",
+      "role": "passenger",
+      "phone": "+918368327117",
+      "id": "usr_1792333575228_o6wdi",
+      "createdAt": "2026-10-18T14:26:15.228Z"
+    }
+  ],
+  "rides": [
+    {
+      "passengerId": "usr_test123",
+      "passengerName": "Sara Passenger",
+      "passengerEmail": "sara@test.com",
+      "pickupAddress": "MG Road, Metro Gate 2",
+      "dropoffAddress": "International Airport Terminal 1",
+      "distanceKm": 32.5,
+      "fareAmount": 635,
+      "vehicleType": "?? Prime Sedan",
+      "id": "ride_1792331153298_3tpa",
+      "status": "REQUESTED",
+      "createdAt": "2026-10-18T13:45:53.298Z",
+      "updatedAt": "2026-10-18T13:45:53.298Z"
+    }
+  ],
+  "driverLocations": [
+    {
+      "driverId": "usr_test1",
+      "driverName": "Rajesh Verma",
+      "driverEmail": "rajesh@cabs.com",
+      "vehicleType": "car_sedan",
+      "vehicleNumber": "MP-18-CA-4421",
+      "lat": 23.2847,
+      "lng": 81.3542,
+      "isOnline": true,
+      "updatedAt": "2026-10-18T14:23:31.321Z"
+    },
+    {
+      "driverId": "usr_test2",
+      "driverName": "Vikram Singh",
+      "driverEmail": "vikram@cabs.com",
+      "vehicleType": "auto",
+      "vehicleNumber": "MP-54-AU-1209",
+      "lat": 23.5246,
+      "lng": 80.8354,
+      "isOnline": true,
+      "updatedAt": "2026-10-18T14:23:35.230Z"
+    }
+  ]
+}
